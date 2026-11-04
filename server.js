@@ -37,6 +37,18 @@ app.get('/projects', async (req, res) => {
     res.render('projects', { title });
 });
 
+app.get('/categories', async (req, res) => {
+    const title = 'Service Project Categories';
+    const categories = [
+        'Environmental',
+        'Educational',
+        'Community Service',
+        'Health and Wellness'
+    ];
+
+    res.render('categories', { title, categories });
+});
+
 
 
 // Set EJS as the templating engine

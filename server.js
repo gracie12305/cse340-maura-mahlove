@@ -5,20 +5,11 @@ import path from 'path';
 
 import { testConnection } from './src/model/db.js';
 
-import {
-    getAllOrganizations,
-    getOrganizationDetails
-} from './src/model/organizations.js';
 
-import { getAllCategories } from './src/model/categories.js';
+import categoryRoute from './src/routes/categoryRoute.js';
+import organizationRoute from './src/routes/organizationRoute.js';
+import projectRoute from './src/routes/projectRoute.js';
 
-import {
-    getAllProjects,
-    getUpcomingProjects,
-    getProjectDetails
-} from './src/model/projects.js';
-
-const NUMBER_OF_UPCOMING_PROJECTS = 5;
 
 
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() ||
@@ -29,6 +20,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
+app.set('view engine', 'ejs');
+
+// Tell Express where to find your templates
+app.set('views', path.join(__dirname, 'src/views'));
+
 
 /**
  * Configure Express middleware
@@ -51,6 +48,10 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use('/', categoryRoute);
+app.use('/', organizationRoute);
+app.use('/', projectRoute);
+
 /**
  * Routes
  */
@@ -59,61 +60,17 @@ app.get('/', async (req, res) => {
     res.render('home', { title });
 });
 
-app.get('/organizations', async (req, res) => {
-    const organizations = await getAllOrganizations();
-    console.log(organizations);
-
-    const title = 'Our Partner Organizations';
-    res.render('organizations', { title, organizations });
+app.use((req, res) => {
+    res.status(404).render('404', { title: 'Page Not Found' });
 });
 
-app.get('/organization/:id', async (req, res) => {
-    const id = req.params.id;
-
-    const organization = await getOrganizationDetails(id);
-
-    const title = 'Organization Details';
-
-    res.render('organization', { title, organization });
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).render('500', { title: 'Internal Server Error' });
 });
-
-
-
-app.get('/projects', async (req, res) => {
-    const title = 'Upcoming Service Projects';
-    const projects = await getUpcomingProjects(NUMBER_OF_UPCOMING_PROJECTS);
-
-    res.render('projects', { title, projects });
-});
-
-
-app.get('/project/:id', async (req, res) => {
-    const id = req.params.id;
-
-    const project = await getProjectDetails(id);
-
-    const title = 'Project Details';
-
-    res.render('project', { title, project });
-});
-
-
-
-
-app.get('/categories', async (req, res) => {
-    const title = 'Service Project Categories';
-    const categories = await getAllCategories();
-
-    res.render('categories', { title, categories });
-});
-
 
 
 // Set EJS as the templating engine
-app.set('view engine', 'ejs');
-
-// Tell Express where to find your templates
-app.set('views', path.join(__dirname, 'src/views'));
 
 
 app.listen(PORT, async () => {

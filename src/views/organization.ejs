@@ -24,6 +24,18 @@
                 <strong>Logo:</strong>
                 <%= organization.logo_filename %>
             </p>
+
+            <h3>Projects by this Organization</h3>
+
+            <ul>
+                <% projects.forEach((project)=> { %>
+                    <li>
+                        <a href="/project/<%= project.project_id %>">
+                            <%= project.project_name %>
+                        </a>
+                    </li>
+                    <% }) %>
+            </ul>
         </section>
 
         <a href="/organizations">Back to Organizations</a>

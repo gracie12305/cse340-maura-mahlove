@@ -5,11 +5,20 @@ import path from 'path';
 
 import { testConnection } from './src/model/db.js';
 
-import { getAllOrganizations } from './src/model/organizations.js';
+import {
+    getAllOrganizations,
+    getOrganizationDetails
+} from './src/model/organizations.js';
 
 import { getAllCategories } from './src/model/categories.js';
 
-import { getAllProjects } from './src/model/projects.js';
+import {
+    getAllProjects,
+    getUpcomingProjects,
+    getProjectDetails
+} from './src/model/projects.js';
+
+const NUMBER_OF_UPCOMING_PROJECTS = 5;
 
 
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() ||
@@ -28,6 +37,20 @@ const app = express();
 //Serve static files from the public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Middleware to log all incoming requests
+app.use((req, res, next) => {
+    if (NODE_ENV === 'development') {
+        console.log(`${req.method} ${req.url}`);
+    }
+    next(); // Pass control to the next middleware or route
+});
+
+// Middleware to make NODE_ENV available to all templates
+app.use((req, res, next) => {
+    res.locals.NODE_ENV = NODE_ENV;
+    next();
+});
+
 /**
  * Routes
  */
@@ -44,13 +67,34 @@ app.get('/organizations', async (req, res) => {
     res.render('organizations', { title, organizations });
 });
 
+app.get('/organization/:id', async (req, res) => {
+    const id = req.params.id;
+
+    const organization = await getOrganizationDetails(id);
+
+    const title = 'Organization Details';
+
+    res.render('organization', { title, organization });
+});
+
 
 
 app.get('/projects', async (req, res) => {
-    const title = 'Service Projects';
-    const projects = await getAllProjects();
+    const title = 'Upcoming Service Projects';
+    const projects = await getUpcomingProjects(NUMBER_OF_UPCOMING_PROJECTS);
 
     res.render('projects', { title, projects });
+});
+
+
+app.get('/project/:id', async (req, res) => {
+    const id = req.params.id;
+
+    const project = await getProjectDetails(id);
+
+    const title = 'Project Details';
+
+    res.render('project', { title, project });
 });
 
 

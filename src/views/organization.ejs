@@ -1,0 +1,32 @@
+<%- include('partials/header') %>
+
+    <main>
+        <h1>
+            <%= title %>
+        </h1>
+
+        <section>
+            <h2>
+                <%= organization.name %>
+            </h2>
+
+            <p>
+                <strong>Description:</strong>
+                <%= organization.description %>
+            </p>
+
+            <p>
+                <strong>Contact Email:</strong>
+                <%= organization.contact_email %>
+            </p>
+
+            <p>
+                <strong>Logo:</strong>
+                <%= organization.logo_filename %>
+            </p>
+        </section>
+
+        <a href="/organizations">Back to Organizations</a>
+    </main>
+
+    <%- include('partials/footer') %>

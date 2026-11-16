@@ -56,32 +56,39 @@ CREATE TABLE project (
     project_name VARCHAR(150) NOT NULL,
     description TEXT NOT NULL,
     organization_id INT NOT NULL,
+    date DATE NOT NULL,
+    location VARCHAR(150) NOT NULL,
     FOREIGN KEY (organization_id)
         REFERENCES organization(organization_id)
 );
 
 INSERT INTO project
-(project_name, description, organization_id)
+(project_name, description, organization_id, date, location)
 VALUES
 (
     'Park Cleanup',
     'Join us to clean up local parks and make them beautiful!',
     (SELECT organization_id FROM organization
-     WHERE name = 'UnityServe Volunteers')
+     WHERE name = 'UnityServe Volunteers'),
+    '2026-11-25',
+    'Manzini'
 ),
 (
     'Food Drive',
     'Help collect and distribute food to those in need.',
     (SELECT organization_id FROM organization
-     WHERE name = 'GreenHarvest Growers')
+     WHERE name = 'GreenHarvest Growers'),
+    '2026-12-05',
+    'Mbabane'
 ),
 (
     'Community Tutoring',
     'Volunteer to tutor students in various subjects.',
     (SELECT organization_id FROM organization
-     WHERE name = 'BrightFuture Builders')
+     WHERE name = 'BrightFuture Builders'),
+    '2026-12-12',
+    'Matsapha'
 );
-
 
 -- =========================================
 -- 3. CATEGORIES TABLE

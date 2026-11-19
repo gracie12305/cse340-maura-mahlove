@@ -46,6 +46,8 @@
     "escape-html": "^1.0.3",
     "etag": "^1.8.1",
     "express": "^5.3.0",
+    "express-session": "^1.19.0",
+    "express-validator": "^7.3.2",
     "fill-range": "^7.1.1",
     "finalhandler": "^2.1.1",
     "forwarded": "^0.2.0",

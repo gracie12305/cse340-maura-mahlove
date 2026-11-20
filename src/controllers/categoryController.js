@@ -4,10 +4,14 @@ import {
     getCategoryDetails,
     getProjectsByCategoryId,
     getCategoriesByProjectId,
-    updateCategoryAssignments
+    updateCategoryAssignments,
+    createCategory,
+    updateCategory
 } from '../model/categories.js';
 
 import { getProjectDetails } from '../model/projects.js';
+
+import { validationResult } from 'express-validator';
 
 const buildCategories = async (req, res) => {
     const title = 'Service Project Categories';
@@ -63,11 +67,84 @@ const processAssignCategoriesForm = async (req, res) => {
 
 };
 
+const buildNewCategory = async (req, res) => {
+    const title = 'Add New Category';
+
+    res.render('new-category', { title });
+};
+
+const processNewCategory = async (req, res) => {
+    const { categoryName } = req.body;
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        errors.array().forEach((error) => {
+            req.flash('error', error.msg);
+        });
+
+        return res.redirect('/new-category');
+    }
+
+    try {
+        await createCategory(categoryName);
+
+        req.flash('success', 'New category created successfully!');
+        return res.redirect('/categories');
+
+    } catch (error) {
+        console.error('Error creating category:', error);
+        req.flash('error', 'There was an error creating the category.');
+        return res.redirect('/new-category');
+    }
+};
+
+const buildEditCategory = async (req, res) => {
+    const id = req.params.id;
+
+    const category = await getCategoryDetails(id);
+
+    const title = 'Edit Category';
+
+    res.render('edit-category', { title, category });
+};
+
+const processEditCategory = async (req, res) => {
+    const id = req.params.id;
+    const { categoryName } = req.body;
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        errors.array().forEach((error) => {
+            req.flash('error', error.msg);
+        });
+
+        return res.redirect(`/edit-category/${id}`);
+    }
+
+    try {
+        await updateCategory(id, categoryName);
+
+        req.flash('success', 'Category updated successfully!');
+        return res.redirect('/categories');
+
+    } catch (error) {
+        console.error('Error updating category:', error);
+        req.flash('error', 'There was an error updating the category.');
+        return res.redirect(`/edit-category/${id}`);
+    }
+};
+
 export {
 
     buildCategories,
     buildCategoryDetails,
     showAssignCategoriesForm,
-    processAssignCategoriesForm
+    processAssignCategoriesForm,
+    buildEditCategory,
+    processEditCategory,
+    buildNewCategory,
+    processNewCategory
 };
 

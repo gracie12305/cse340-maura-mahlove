@@ -5,7 +5,9 @@ import {
     buildProjectDetails,
     showNewProjectForm,
     processNewProjectForm,
-    projectValidation
+    projectValidation,
+    showEditProjectForm,
+    processEditProjectForm
 } from '../controllers/projectController.js';
 
 const router = express.Router();
@@ -19,5 +21,11 @@ router.get('/new-project', showNewProjectForm);
 
 // Route to handle new project form submission
 router.post('/new-project', projectValidation, processNewProjectForm);
+
+// Route to display the edit project form
+router.get('/edit-project/:id', showEditProjectForm);
+
+// Route to handle edit project form submission
+router.post('/edit-project/:id', projectValidation, processEditProjectForm);
 
 export default router;

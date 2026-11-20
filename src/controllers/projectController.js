@@ -2,6 +2,7 @@ import {
     getUpcomingProjects,
     getProjectDetails,
     createProject,
+    updateProject
 } from '../model/projects.js';
 
 import {
@@ -114,11 +115,60 @@ const processNewProjectForm = async (req, res) => {
 };
 
 
+const showEditProjectForm = async (req, res) => {
+    const id = req.params.id;
+
+    const projectDetails = await getProjectDetails(id);
+    const organizations = await getAllOrganizations();
+
+    const title = 'Edit Service Project';
+
+    res.render('edit-project', {
+        title,
+        projectDetails,
+        organizations
+    });
+};
+
+const processEditProjectForm = async (req, res) => {
+    const id = req.params.id;
+
+    const { title, description, location, date, organizationId } = req.body;
+
+    const errors = validationResult(req);
+
+
+    if (!errors.isEmpty()) {
+        errors.array().forEach((error) => {
+            req.flash('error', error.msg);
+        });
+
+        return res.redirect(`/edit-project/${id}`);
+
+    }
+
+    try {
+        await updateProject(id, title, description, location, date, organizationId);
+
+        req.flash('success', 'Service project updated successfully!');
+        return res.redirect(`/project/${id}`);
+
+    } catch (error) {
+        console.error('Error updating service project:', error);
+        req.flash('error', 'There was an error updating the service project.');
+        return res.redirect(`/edit-project/${id}`);
+    }
+
+};
+
+
 export {
     buildProjects,
     buildProjectDetails,
     showNewProjectForm,
     processNewProjectForm,
-    projectValidation
+    projectValidation,
+    showEditProjectForm,
+    processEditProjectForm
 
 };
